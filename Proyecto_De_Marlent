@@ -1,0 +1,79 @@
+import java.util.Scanner
+data class DispositivoElectronico(val nombre: String, val precio: Double)
+data class Ubicacion(val latitud: Double, val longitud: Double)
+class Cuenta(val username: String, val password: String)
+class MetodosPago {
+    fun procesarPago(monto: Double) {
+        println("Procesando pago de $monto...")
+        println("¡Pago procesado exitosamente!")
+    }
+}
+fun login(username: String, password: String, cuentas: List<Cuenta>): Boolean {
+    return cuentas.any { it.username == username && it.password == password }
+}
+fun crearCuenta(cuentas: MutableList<Cuenta>): Cuenta {
+    val scanner = Scanner(System.`in`)
+    println("Creación de cuenta")
+    print("Ingrese su nombre de usuario:", )
+    val username = scanner.nextLine()
+    print("Ingrese su contraseña: ")
+    val password = scanner.nextLine()
+    val nuevaCuenta = Cuenta(username, password)
+    cuentas.add(nuevaCuenta)
+    return nuevaCuenta
+}
+fun menu() {
+    println("Bienvenido al sistema de ventas y rentas de dispositivos electrónicos")
+    println("1. Ver dispositivos en venta")
+    println("2. Ver dispositivos disponibles para renta")
+    println("3. Salir")
+}
+fun main() {
+    val scanner = Scanner(System.`in`)
+    val cuentasRegistradas = mutableListOf<Cuenta>()
+    println("¿Desea iniciar sesión o crear una cuenta? (Inicio de sesión/Crear cuenta)")
+    val opcion = scanner.nextLine()
+    when (opcion) {
+        "Inicio de sesión" -> {
+            println("Por favor, inicie sesión:")
+            print("Usuario: ")
+            val username = scanner.nextLine()
+            print("Contraseña: ")
+            val password = scanner.nextLine()
+            if (login(username, password, cuentasRegistradas)) {
+                println("Inicio de sesión exitoso.\n")
+                val metodosPago = MetodosPago()
+                var opcionMenu: Int
+                do {
+                    menu()
+                    print("Seleccione una opción: ")
+                    opcionMenu = scanner.nextInt()
+                    when (opcionMenu) {
+                        1 -> {
+                            println("Dispositivos en venta:")
+                        }
+                        2 -> {
+                            println("Dispositivos disponibles para renta:")
+                        }
+                        3 -> println("Saliendo del sistema.")
+                        else -> println("Opción no válida. Por favor, seleccione una opción válida.")
+                    }
+                } while (opcionMenu != 3)
+                println("¿Desea procesar un pago antes de salir? (Sí/No)")
+                val respuesta = scanner.next()
+                if (respuesta.equals("Sí", ignoreCase = true)) {
+                    println("Ingrese el monto a pagar:")
+                    val monto = scanner.nextDouble()
+                    metodosPago.procesarPago(monto)
+                }
+            } else {
+                println("Credenciales incorrectas. Inicio de sesión fallido.")
+            }
+        }
+
+        "Crear cuenta" -> {
+            val nuevaCuenta = crearCuenta(cuentasRegistradas)
+            println("Cuenta creada exitosamente para el usuario: ${nuevaCuenta.username}")
+        }
+    }
+}
